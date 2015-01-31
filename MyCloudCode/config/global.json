@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "_default": {
+            "link": "uoftHacks"
+        }, 
+        "uoftHacks": {
+            "applicationId": "2aUMMAZ9FGKpLa8Uesnb9BBQPQxon5vF2IfOyO6U", 
+            "masterKey": "0Sq8UP7WAIt6BhxMoum1RrTX3zPIM44zc1AYoBxy"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.4"
+    }
+}
