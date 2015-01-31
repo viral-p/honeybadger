@@ -311,7 +311,8 @@ Parse.Cloud.define("editPost", function(request, response){
     });
 });
     
-Parse.Cloud.define("editUser", function(request, response){
+//edit user attributes
+Parse.Cloud.define("editUserAttributes", function(request, response){
     var user = new Parse.User();
     var query = new Parse.Query(user);
     var _user = query.get(request.param.objectId, {
@@ -348,3 +349,113 @@ Parse.Cloud.define("editUser", function(request, response){
     });
 });
     
+//edit User settings
+Parse.Cloud.define("editUserSetting", function(request, response){
+    var user = new Parse.User();
+    var query = new Parse.Query(user);
+    var _user = query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no User found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+    _user.set("accountSettings", request.param.accountSettings);
+    
+    _user.save(null, {
+        success: function(user) {
+            // Execute any logic that should take place after the object is saved.
+            alert('Upated object with objectId: ' + user.id);
+        },
+        error: function(user, error) {
+            // Execute any logic that should take place if the save fails.
+            // error is a Parse.Error with an error code and message.
+            alert('Failed to update object, with error code: ' + error.message);
+        }
+    });
+});
+   
+//delete a user
+Parse.Cloud.define("deleteUser", function(request, response){
+    var user = new Parse.User();
+    var query = new Parse.Query(user);
+    var _user = query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no User found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+    
+    _user.destroy({
+        success: function(_user) {
+            // The object was deleted from the Parse Cloud.
+        },
+        error: function(_user, error) {
+            // The delete failed.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+    
+//delete a post
+Parse.Cloud.define("deletePost", function(request, response){
+    var post = new Parse.Post();
+    var query = new Parse.Query(post);
+    var _post = query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Post found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+    
+    _post.destroy({
+        success: function(_post) {
+            // The object was deleted from the Parse Cloud.
+        },
+        error: function(_post, error) {
+            // The delete failed.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+  
+//delete a prompt
+Parse.Cloud.define("deletePrompt", function(request, response){
+    var prompt = new Parse.Prompt();
+    var query = new Parse.Query(prompt);
+    var _prompt = query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Prompt found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+    
+    _prompt.destroy({
+        success: function(_prompt) {
+            // The object was deleted from the Parse Cloud.
+        },
+        error: function(_prompt, error) {
+            // The delete failed.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
