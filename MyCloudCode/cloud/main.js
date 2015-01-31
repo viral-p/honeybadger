@@ -2,15 +2,12 @@
 //create new user
 Parse.Cloud.define("newUserSignUp", function(request, response){
     var user = new Parse.User();
+    
     user.set("username", request.param.username);
     user.set("password", request.param.password);
     user.set("email", request.param.email);
     user.set("tagLine", request.param.tagLine);
     user.set("authorName", request.param.username);
-    user.set("followers", []);
-    user.set("following", []);
-    user.set("posts", []);
-    user.set("postsLiked", []);
     user.set("accountSettings", request.param.accountSettings);
     user.set("profilePic", request.param.profilePic);
     user.set("createdAt", Date.now);
@@ -30,16 +27,15 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
 //create new post
 Parse.Cloud.define("createNewPost", function(request, response){
     var post = new Parse.Post();
+    var user = Parse.User.current();
     
     post.set("Title", request.param.title);
     post.set("subtitle", request.param.subtitle);
-    post.set("displayedAuthorName", request.param.displayName);
     post.set("coverImg", request.param.coverImg);
+    post.set("creator", user);
     post.set("createdAt", Date.now);
     post.set("updatedAt", Date.now);
     post.set("tags", request.param.tags);
-    post.set("likes", []);
-    post.set("views", []);
     post.set("prompt", request.param.prompt);
     post.set("wordCount", request.param.wordCount);
     post.set("charCount", request.param.charCount);
@@ -63,8 +59,6 @@ Parse.Cloud.define("createNewPrompt", function(request, response){
     var prompt = new Parse.Prompt();
     
     prompt.set("promptContent", request.param.content);
-    prompt.set("postResponses", []);
-    prompt.set("tags", []);
     prompt.set("type", request.param.type);
     prompt.set("createdAt", Date.now);
     prompt.set("updatedAt", Date.now);
@@ -82,7 +76,7 @@ Parse.Cloud.define("createNewPrompt", function(request, response){
 });
 
 //retrieve user with specific objectId
-Parse.Cloud.define("retrieveUserWithID", function(request,response){
+Parse.Cloud.define("getUserWithID", function(request,response){
     var user = new Parse.User();
     var query = new Parse.Query(user);
     query.get(request.param.objectId, {
@@ -99,7 +93,7 @@ Parse.Cloud.define("retrieveUserWithID", function(request,response){
 });
 
 //retrieve specifi post by objectId
-Parse.Cloud.define("retrievePostWithID", function(request,response){
+Parse.Cloud.define("getPostWithID", function(request,response){
     var post = new Parse.Post();
     var query = new Parse.Query(post);
     query.get(request.param.objectId, {
@@ -116,7 +110,7 @@ Parse.Cloud.define("retrievePostWithID", function(request,response){
 });
 
 //retrieve specific post by objectId
-Parse.Cloud.define("retrievePromptWithID", function(request,response){
+Parse.Cloud.define("getPromptWithID", function(request,response){
     var prompt = new Parse.Prompt();
     var query = new Parse.Query(prompt);
     query.get(request.param.objectId, {
@@ -218,38 +212,24 @@ Parse.Cloud.define("searchPostsbyCreator", function(request,response){
 
 //get array of followers of given user
 Parse.Cloud.define("getFollowers", function(request, response){
-    var user = new Parse.User();
-    
-    var query = new Parse.Query(user);
-    
-    query.select("followers");
-    query.equalTo("objectId", request.param.objectId);
-    
-    query.find({
-       success: function(results){
-           response.success(results);
-       },
-        error: function(object, error) { 
-            response.error("error in search");
+    var user = new Parse.User.current();
+    var relation = user.relation("followers");
+    relation.query().find({
+    success: function(list) {
+        // list contains the followers of the current user
+        response.success(list);
         }
     });
 });
 
 //get array of users that given user is following
 Parse.Cloud.define("getFollowing", function(request, response){
-    var user = new Parse.User();
+    var user = new Parse.User.current();
     
-    var query = new Parse.Query(user);
-    
-    query.select("following");
-    query.equalTo("objectId", request.param.objectId);
-    
-    query.find({
-       success: function(results){
-           response.success(results);
-       },
-        error: function(object, error) { 
-            response.error("error in search");
+    var relation = user.relation("following");
+    relation.query().find({
+        success: function(list){
+            response.success(list);
         }
     });
 });
@@ -289,11 +269,9 @@ Parse.Cloud.define("editPost", function(request, response){
     
     _post.set("Title", request.param.title);
     _post.set("subtitle", request.param.subtitle);
-    _post.set("displayedAuthorName", request.param.displayName);
     _post.set("coverImg", request.param.coverImg);
     _post.set("updatedAt", Date.now);
     _post.set("tags", request.param.tags);
-    _post.set("prompt", request.param.prompt);
     _post.set("wordCount", request.param.wordCount);
     _post.set("charCount", request.param.charCount);
     _post.set("textContent", request.param.textContent);
@@ -331,7 +309,6 @@ Parse.Cloud.define("editUserAttributes", function(request, response){
     _user.set("email", request.param.email);
     _user.set("tagLine", request.param.tagLine);
     _user.set("authorName", request.param.username);
-    _user.set("following", []);
     _user.set("accountSettings", request.param.accountSettings);
     _user.set("profilePic", request.param.profilePic);
     _user.set("updatedAt", Date.now);
@@ -381,21 +358,8 @@ Parse.Cloud.define("editUserSetting", function(request, response){
 
 //delete a user
 Parse.Cloud.define("deleteUser", function(request, response){
-    var user = new Parse.User();
-    var query = new Parse.Query(user);
-    var _user = query.get(request.param.objectId, {
-        success: function(results) {
-            response.success(results);
-            // The object was retrieved successfully.
-        },
-        error: function(object, error) {
-            response.error("no User found");
-            // The object was not retrieved successfully.
-            // error is a Parse.Error with an error code and message.
-        }
-    });
-    
-    _user.destroy({
+    var user = new Parse.User.current();
+    user.destroy({
         success: function(_user) {
             // The object was deleted from the Parse Cloud.
         },
@@ -460,7 +424,7 @@ Parse.Cloud.define("deletePrompt", function(request, response){
     });
 });
 
-//
+//user login
 Parse.Cloud.define("loginUser", function(request, response){
     Parse.User.logIn(request.param.username, request.param.password, {
         success: function(user) {
@@ -472,7 +436,31 @@ Parse.Cloud.define("loginUser", function(request, response){
     });
 });
 
+//user logout
 Parse.Cloud.define("logoutUser", function(request, response){
     Parse.User.logOut();
 });
 
+//follow a user
+Parse.Cloud.define("followUser", function(request, response){
+    var currentUser = Parse.User.curent();
+    var toFollow = getUserByID(request.param.toFollow);
+    
+    currentUser.relation("following").add(toFollow);
+    toFollow.relation("followers").add(currentUser);
+    
+    currentUser.save();
+    toFollow.save();
+});
+
+//unfollow a user
+Parse.Cloud.define("followUser", function(request, response){
+    var currentUser = Parse.User.curent();
+    var followed = getUserByID(request.param.toRemove);
+    
+    currentUser.relation("following").remove(followed);
+    followed.relation("followers").remove(currentUser);
+    
+    currentUser.save();
+    followed.save();
+});
