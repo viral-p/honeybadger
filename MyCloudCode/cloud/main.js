@@ -1,6 +1,6 @@
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
-
+//create new user
 Parse.Cloud.define("newUserSignUp", function(request, response){
     var user = new Parse.User();
     user.set("username", request.param.username);
@@ -28,12 +28,14 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
     });
 });
 
+//create new post
 Parse.Cloud.define("createNewPost", function(request, response){
     var post = new Parse.Post();
     
     post.set("Title", request.param.title);
+    post.set("subtitle", request.param.subtitle);
     post.set("displayedAuthorName", request.param.displayName);
-    post.set("coverImg", request.param.converImg);
+    post.set("coverImg", request.param.coverImg);
     post.set("createdAt", Date.now);
     post.set("updatedAt", Date.now);
     post.set("tags", request.param.tags);
@@ -41,7 +43,7 @@ Parse.Cloud.define("createNewPost", function(request, response){
     post.set("views", []);
     post.set("prompt", request.param.prompt);
     post.set("wordCount", request.param.wordCount);
-    post.set("charCount", request.param.wordCount);
+    post.set("charCount", request.param.charCount);
     post.set("textContent", request.param.textContent);
     
     post.save(null, {
@@ -57,6 +59,7 @@ Parse.Cloud.define("createNewPost", function(request, response){
     });
 });
 
+//create new Prompt
 Parse.Cloud.define("createNewPrompt", function(request, response){
     var prompt = new Parse.Prompt();
     
@@ -79,6 +82,7 @@ Parse.Cloud.define("createNewPrompt", function(request, response){
     });
 });
 
+//retrieve user with specific objectId
 parse.Cloud.define("retrieveUserWithID", function(request,response){
     var user = new Parse.User();
     var query = new Parse.Query(user);
@@ -95,6 +99,7 @@ parse.Cloud.define("retrieveUserWithID", function(request,response){
     });
 });
 
+//retrieve specifi post by objectId
 parse.Cloud.define("retrievePostWithID", function(request,response){
     var post = new Parse.Post();
     var query = new Parse.Query(post);
@@ -111,6 +116,7 @@ parse.Cloud.define("retrievePostWithID", function(request,response){
     });
 });
 
+//retrieve specific post by objectId
 parse.Cloud.define("retrievePromptWithID", function(request,response){
     var prompt = new Parse.Prompt();
     var query = new Parse.Query(prompt);
@@ -127,6 +133,7 @@ parse.Cloud.define("retrievePromptWithID", function(request,response){
     });
 });
 
+//retrieve array of post that contain the tag specified
 parse.Cloud.define("retrievePostsWithTag", function(request,response){
     var post = new Parse.Post();
     var query = new Parse.Query(post);
@@ -144,6 +151,7 @@ parse.Cloud.define("retrievePostsWithTag", function(request,response){
     });
 });
 
+//retrieve aray of prompts with specified tag
 parse.Cloud.define("retrievePromptsWithTag", function(request,response){
     var prompt = new Parse.Prompt();
     var query = new Parse.Query(prompt);
@@ -161,6 +169,7 @@ parse.Cloud.define("retrievePromptsWithTag", function(request,response){
     });
 });
 
+//search for Users by Name
 parse.Cloud.define("searchUsersbyName", function(request,response){
     var user = new Parse.User();
     
@@ -185,6 +194,7 @@ parse.Cloud.define("searchUsersbyName", function(request,response){
     });
 });
 
+//search for posts by Creator
 parse.Cloud.define("searchPostsbyCreator", function(request,response){
     var post = new Parse.Post();
     
@@ -207,6 +217,7 @@ parse.Cloud.define("searchPostsbyCreator", function(request,response){
     });
 });
 
+//get array of followers of given user
 parse.Cloud.define("getFollowers", function(request, response){
     var user = new Parse.User();
     
@@ -224,6 +235,8 @@ parse.Cloud.define("getFollowers", function(request, response){
         }
     });
     
+
+//get array of users that given user is following
 parse.Cloud.define("getFollowing", function(request, response){
     var user = new Parse.User();
     
@@ -241,3 +254,60 @@ parse.Cloud.define("getFollowing", function(request, response){
         }
     });
 });
+    
+//get array of posts written by author name
+Parse.Cloud.define("getPostsbyUser", function(request, response){
+    var post = new Parse.Post();
+    var query = new Parse.Query(post);
+    
+    query.equalTo("displayedAuthorName", request.param.author);
+    
+    query.find({
+       success: function(results){
+           response.success(results);
+       },
+        error: function(object, error) { 
+            response.error("error in search");
+        }
+    });
+});
+    
+Parse.Cloud.define("editPost", function(request, response){
+    var post = new Parse.Post();
+    var query = new Parse.Query(post);
+    var _post = query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Post found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+    
+    _post.set("Title", request.param.title);
+    _post.set("subtitle", request.param.subtitle);
+    _post.set("displayedAuthorName", request.param.displayName);
+    _post.set("coverImg", request.param.coverImg);
+    _post.set("updatedAt", Date.now);
+    _post.set("tags", request.param.tags);
+    _post.set("prompt", request.param.prompt);
+    _post.set("wordCount", request.param.wordCount);
+    _post.set("charCount", request.param.charCount);
+    _post.set("textContent", request.param.textContent);
+    
+    _post.save(null, {
+        success: function(post) {
+            // Execute any logic that should take place after the object is saved.
+            alert('Upated object with objectId: ' + post.id);
+        },
+        error: function(post, error) {
+            // Execute any logic that should take place if the save fails.
+            // error is a Parse.Error with an error code and message.
+            alert('Failed to update object, with error code: ' + error.message);
+        }
+    });
+});
+    
