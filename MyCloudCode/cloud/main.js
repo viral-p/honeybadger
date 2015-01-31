@@ -10,8 +10,6 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
     user.set("authorName", request.param.username);
     user.set("accountSettings", request.param.accountSettings);
     user.set("profilePic", request.param.profilePic);
-    user.set("createdAt", Date.now);
-    user.set("updatedAt", Date.now);
     
     user.signUp(null, {
         success: function(user) {
@@ -28,13 +26,11 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
 Parse.Cloud.define("createNewPost", function(request, response){
     var post = new Parse.Post();
     var user = Parse.User.current();
-    
+    var prompt = request.param.prompt;
     post.set("Title", request.param.title);
     post.set("subtitle", request.param.subtitle);
     post.set("coverImg", request.param.coverImg);
     post.set("creator", user);
-    post.set("createdAt", Date.now);
-    post.set("updatedAt", Date.now);
     post.set("tags", request.param.tags);
     post.set("prompt", request.param.prompt);
     post.set("wordCount", request.param.wordCount);
@@ -52,6 +48,9 @@ Parse.Cloud.define("createNewPost", function(request, response){
             alert('Failed to create new object, with error code: ' + error.message);
         }
     });
+    
+    prompt.relation("postResponses").add(post);
+    user.relation("posts").add(post);
 });
 
 //create new Prompt
@@ -60,8 +59,6 @@ Parse.Cloud.define("createNewPrompt", function(request, response){
     
     prompt.set("promptContent", request.param.content);
     prompt.set("type", request.param.type);
-    prompt.set("createdAt", Date.now);
-    prompt.set("updatedAt", Date.now);
     prompt.save(null, {
         success: function(prompt) {
             // Execute any logic that should take place after the object is saved.
@@ -174,29 +171,6 @@ Parse.Cloud.define("searchUsersbyName", function(request,response){
     query3.contains("name", request.param.name);
     
     var query = new Parse.Query.or(query1,query2, query3);
-    query.find({
-        success: function(results) {
-            response.success(results);
-            // The object was retrieved successfully.
-        },
-        error: function(object, error) {
-            response.error("no Post found");
-            // The object was not retrieved successfully.
-            // error is a Parse.Error with an error code and message.
-        }
-    });
-});
-
-//search for posts by Creator
-Parse.Cloud.define("searchPostsbyCreator", function(request,response){
-    var post = new Parse.Post();
-    
-    var query1 = new Parse.Query(post);
-    var query2 = new Parse.Query(post);
-    query1.contains("username", request.param.name);
-    query2.contains("authorNameDisplayed", request.param.name)
-    
-    var query = new Parse.Query.or(query1,query2);
     query.find({
         success: function(results) {
             response.success(results);
@@ -488,3 +462,5 @@ Parse.Cloud.define("unlikePost", function(request, response){
     currentUser.save();
     liked.save();
 });
+
+
