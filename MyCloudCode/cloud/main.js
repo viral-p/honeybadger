@@ -454,7 +454,7 @@ Parse.Cloud.define("followUser", function(request, response){
 });
 
 //unfollow a user
-Parse.Cloud.define("followUser", function(request, response){
+Parse.Cloud.define("unfollowUser", function(request, response){
     var currentUser = Parse.User.curent();
     var followed = getUserByID(request.param.toRemove);
     
@@ -463,4 +463,28 @@ Parse.Cloud.define("followUser", function(request, response){
     
     currentUser.save();
     followed.save();
+});
+
+//like a post
+Parse.Cloud.define("likePost", function(request, response){
+    var currentUser = Parse.User.curent();
+    var toLike = getPostByID(request.param.toLike);
+    
+    currentUser.relation("likes").add(toLike);
+    toLike.relation("likes").add(currentUser);
+    
+    currentUser.save();
+    toLike.save();
+});
+
+//unlike a post
+Parse.Cloud.define("unlikePost", function(request, response){
+    var currentUser = Parse.User.curent();
+    var liked = getUserByID(request.param.toUnlike);
+    
+    currentUser.relation("likes").remove(liked);
+    liked.relation("likes").remove(currentUser);
+    
+    currentUser.save();
+    liked.save();
 });
