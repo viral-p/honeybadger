@@ -1,0 +1,73 @@
+body{
+	background-color: #967969;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+}
+
+h2{
+	font-family: 'Roboto', sans-serif;
+	font-weight: 500;
+}
+
+.circular {
+	width: 200px;
+	height: 200px;
+	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	background: url(http://www.earthtouchnews.com/media/1840/ultimate-honey-badger-portrait_GalleryLarge.jpg) no-repeat;
+	display: block;
+    margin-left: auto;
+    margin-right: auto 
+	}
+
+.boxed {
+  background-color: #FFFFFF ;
+}
+
+hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
+}
+
+.circularsm {
+	width: 50px;
+	height: 50px;
+	border-radius: 25px;
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	background: url(http://www.hennydonovanmotif.co.uk/images/small-star-C4.jpg) no-repeat;
+	}
+
+.pull-left {
+  float: left !important;
+}
+
+/* unvisited link */
+a:link {
+    color: #725945;
+}
+
+/* visited link */
+a:visited {
+    color: #725945;
+    text-decoration:none;
+}
+
+/* mouse over link */
+a:hover {
+    color: #97d86b;
+    text-decoration:none;
+}
+
+/* selected link */
+a:active {
+    color: #97d86b;
+    text-decoration:none;
+}
+
