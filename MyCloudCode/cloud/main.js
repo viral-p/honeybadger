@@ -311,3 +311,40 @@ Parse.Cloud.define("editPost", function(request, response){
     });
 });
     
+Parse.Cloud.define("editUser", function(request, response){
+    var user = new Parse.User();
+    var query = new Parse.Query(user);
+    var _user = query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no User found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+    
+    _user.set("password", request.param.password);
+    _user.set("email", request.param.email);
+    _user.set("tagLine", request.param.tagLine);
+    _user.set("authorName", request.param.username);
+    _user.set("following", []);
+    _user.set("accountSettings", request.param.accountSettings);
+    _user.set("profilePic", request.param.profilePic);
+    _user.set("updatedAt", Date.now);
+    
+    _user.save(null, {
+        success: function(user) {
+            // Execute any logic that should take place after the object is saved.
+            alert('Upated object with objectId: ' + user.id);
+        },
+        error: function(user, error) {
+            // Execute any logic that should take place if the save fails.
+            // error is a Parse.Error with an error code and message.
+            alert('Failed to update object, with error code: ' + error.message);
+        }
+    });
+});
+    
