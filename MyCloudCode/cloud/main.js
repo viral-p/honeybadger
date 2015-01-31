@@ -126,3 +126,37 @@ parse.Cloud.define("retrievePromptWithID", function(request,response){
         }
     });
 });
+
+parse.Cloud.define("retrievePostsWithTag", function(request,response){
+    var post = new Parse.Post();
+    var query = new Parse.Query(post);
+    query.equalsTo("tags", request.param.tag);
+    query.find({
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Post found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+
+parse.Cloud.define("retrievePromptsWithTag", function(request,response){
+    var prompt = new Parse.Prompt();
+    var query = new Parse.Query(prompt);
+    query.equalsTo("tags", request.param.tag);
+    query.find( {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Prompt found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
