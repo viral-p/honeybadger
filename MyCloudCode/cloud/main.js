@@ -130,7 +130,7 @@ parse.Cloud.define("retrievePromptWithID", function(request,response){
 parse.Cloud.define("retrievePostsWithTag", function(request,response){
     var post = new Parse.Post();
     var query = new Parse.Query(post);
-    query.equalsTo("tags", request.param.tag);
+    query.equalTo("tags", request.param.tag);
     query.find({
         success: function(results) {
             response.success(results);
@@ -147,7 +147,7 @@ parse.Cloud.define("retrievePostsWithTag", function(request,response){
 parse.Cloud.define("retrievePromptsWithTag", function(request,response){
     var prompt = new Parse.Prompt();
     var query = new Parse.Query(prompt);
-    query.equalsTo("tags", request.param.tag);
+    query.equalTo("tags", request.param.tag);
     query.find( {
         success: function(results) {
             response.success(results);
@@ -157,6 +157,87 @@ parse.Cloud.define("retrievePromptsWithTag", function(request,response){
             response.error("no Prompt found");
             // The object was not retrieved successfully.
             // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+
+parse.Cloud.define("searchUsersbyName", function(request,response){
+    var user = new Parse.User();
+    
+    var query1 = new Parse.Query(user);
+    var query2 = new Parse.Query(user);
+    var query3 = new Parse.Query(user);
+    query1.contains("username", request.param.name);
+    query2.contains("authorName", request.param.name);
+    query3.contains("name", request.param.name);
+    
+    var query = new Parse.Query.or(query1,query2, query3);
+    query.find({
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Post found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+
+parse.Cloud.define("searchPostsbyCreator", function(request,response){
+    var post = new Parse.Post();
+    
+    var query1 = new Parse.Query(post);
+    var query2 = new Parse.Query(post);
+    query1.contains("username", request.param.name);
+    query2.contains("authorNameDisplayed", request.param.name)
+    
+    var query = new Parse.Query.or(query1,query2);
+    query.find({
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Post found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+
+parse.Cloud.define("getFollowers", function(request, response){
+    var user = new Parse.User();
+    
+    var query = new Parse.Query(user);
+    
+    query.select("followers");
+    query.equalTo("objectId", request.param.objectId);
+    
+    query.find({
+       success: function(results){
+           response.success(results);
+       },
+        error: function(object, error) { 
+            response.error("error in search");
+        }
+    });
+    
+parse.Cloud.define("getFollowing", function(request, response){
+    var user = new Parse.User();
+    
+    var query = new Parse.Query(user);
+    
+    query.select("following");
+    query.equalTo("objectId", request.param.objectId);
+    
+    query.find({
+       success: function(results){
+           response.success(results);
+       },
+        error: function(object, error) { 
+            response.error("error in search");
         }
     });
 });
