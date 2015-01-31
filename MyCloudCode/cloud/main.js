@@ -14,17 +14,17 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
     user.set("postsLiked", []);
     user.set("accountSettings", request.param.accountSettings);
     user.set("profilePic", request.param.profilePic);
-    post.set("createdAt", Date.now);
-    post.set("updatedAt", Date.now);
+    user.set("createdAt", Date.now);
+    user.set("updatedAt", Date.now);
     
     user.signUp(null, {
-      success: function(user) {
-        // Hooray! Let them use the app now.
-      },
-      error: function(user, error) {
-        // Show the error message somewhere and let the user try again.
-        alert("Error: " + error.code + " " + error.message);
-      }
+        success: function(user) {
+            // Hooray! Let them use the app now.
+        },
+        error: function(user, error) {
+            // Show the error message somewhere and let the user try again.
+            alert("Error: " + error.code + " " + error.message);
+        }
     });
 });
 
@@ -64,9 +64,9 @@ Parse.Cloud.define("createNewPrompt", function(request, response){
     prompt.set("postResponses", []);
     prompt.set("tags", []);
     prompt.set("type", request.param.type);
-    post.set("createdAt", Date.now);
-    post.set("updatedAt", Date.now);
-    post.save(null, {
+    prompt.set("createdAt", Date.now);
+    prompt.set("updatedAt", Date.now);
+    prompt.save(null, {
         success: function(prompt) {
             // Execute any logic that should take place after the object is saved.
             alert('New object created with objectId: ' + prompt.id);
@@ -75,6 +75,54 @@ Parse.Cloud.define("createNewPrompt", function(request, response){
             // Execute any logic that should take place if the save fails.
             // error is a Parse.Error with an error code and message.
             alert('Failed to create new object, with error code: ' + error.message);
+        }
+    });
+});
+
+parse.Cloud.define("retrieveUserWithID", function(request,response){
+    var user = new Parse.User();
+    var query = new Parse.Query(user);
+    query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no User found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+
+parse.Cloud.define("retrievePostWithID", function(request,response){
+    var post = new Parse.Post();
+    var query = new Parse.Query(post);
+    query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Post found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+        }
+    });
+});
+
+parse.Cloud.define("retrievePromptWithID", function(request,response){
+    var prompt = new Parse.Prompt();
+    var query = new Parse.Query(prompt);
+    query.get(request.param.objectId, {
+        success: function(results) {
+            response.success(results);
+            // The object was retrieved successfully.
+        },
+        error: function(object, error) {
+            response.error("no Prompt found");
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
         }
     });
 });
