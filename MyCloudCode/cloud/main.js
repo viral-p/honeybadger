@@ -463,4 +463,22 @@ Parse.Cloud.define("unlikePost", function(request, response){
     liked.save();
 });
 
-
+Parse.Cloud.define("sendTextNotification", function(request, response){
+    // Require and initialize the Twilio module with your credentials
+var client = require('twilio')('ACCOUNT_SID', 'AUTH_TOKEN');
+ 
+// Send an SMS message
+client.sendSms({
+    to:request.param.toNumber, 
+    from: request.param.fromNumber, 
+    body: request.param.messageBody
+  }, function(err, responseData) { 
+    if (err) {
+      console.log(err);
+    } else { 
+      console.log(responseData.from); 
+      console.log(responseData.body);
+    }
+  }
+);
+});
