@@ -471,7 +471,7 @@ var client = require('twilio')('ACCOUNT_SID', 'AUTH_TOKEN');
 client.sendSms({
     to:request.param.toNumber, 
     from: request.param.fromNumber, 
-    body: request.param.messageBody
+    body: request.param.messageBodyx
   }, function(err, responseData) { 
     if (err) {
       console.log(err);
@@ -481,4 +481,55 @@ client.sendSms({
     }
   }
 );
+});
+
+Parse.Cloud.define("initFacebook", function(request, response){
+     // Initialize Parse
+  Parse.initialize("YOUR_APP_ID", "YOUR_JAVASCRIPT_KEY");
+ 
+  window.fbAsyncInit = function() {
+    Parse.FacebookUtils.init({ // this line replaces FB.init({
+      appId      : '{1598988990312593}', // Facebook App ID
+      status     : true,  // check Facebook Login status
+      cookie     : true,  // enable cookies to allow Parse to access the session
+      xfbml      : true,  // initialize Facebook social plugins on the page
+      version    : 'v2.2' // point to the latest Facebook Graph API version
+    });
+ 
+    // Run code after the Facebook SDK is loaded.
+  };
+ 
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+});
+
+Prase.Cloud.define("FacebookLogin", function(request, response){
+    Parse.FacebookUtils.logIn(null, {
+        success: function(user) {
+            if (!user.existed()) {
+                alert("User signed up and logged in through Facebook!");
+            } else {
+                alert("User logged in through Facebook!");
+            }
+        },
+        error: function(user, error) {
+            alert("User cancelled the Facebook login or did not fully authorize.");
+        }
+    });
+});
+    
+Parse.Cloud.define("FacebookLoginCheck", function(request, response){
+    FB.getLoginStatus(function(response) {
+        if (response.status === 'connected') {
+            console.log('Logged in.');
+        }
+        else {
+          FB.login();
+        }
+    });
 });
