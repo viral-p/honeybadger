@@ -555,8 +555,24 @@ Parse.Cloud.define("FacebookLoginCheck", function(request, response){
 });
 
 //push a specified number of feeds
+//request contains
 Parse.Cloud.define("aggregateBlogs", function(request, response){
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     
+    var query = new Parse.Query(post);
+    query.exists("Title");
+    query.limit(request.param.limit);
+    query.find({
+        success:function(results){
+            response.success("Successfully retrieved " + results.length + " posts");
+            //doSomething with with results
+            response.success(results);
+        },
+        error: function(error){
+            response.error(error.code + ": " + error.message);
+        }
+    });
 });
 
 Parse.Cloud.define("getRandomPost", function(request,response){
