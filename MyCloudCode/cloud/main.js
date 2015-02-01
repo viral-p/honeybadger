@@ -32,7 +32,7 @@ Parse.Cloud.define("createNewPost", function(request, response){
     var prompt = request.params.prompt;
     var tagsArray = request.params.tags.split(',');
     
-    post.set("Title", request.params.title);
+    post.set("title", request.params.title);
     post.set("subtitle", request.params.subtitle);
     //post.set("coverImg", request.params.coverImg);
     post.set("creator", user.id);
@@ -255,14 +255,14 @@ Parse.Cloud.define("editPost", function(request, response){
         }
     });
     
-    _post.set("Title", request.params.title);
+    _post.set("title", request.params.title);
     _post.set("subtitle", request.params.subtitle);
     _post.set("coverImg", request.params.coverImg);
     _post.set("updatedAt", Date.now);
     _post.set("tags", request.params.tags);
-    _post.set("wordCount", request.params.wordCount);
-    _post.set("charCount", request.params.charCount);
     _post.set("textContent", request.params.textContent);
+    _post.set("wordCount", request.params.textContent.split(" ").length);
+    _post.set("charCount", request.params.textContent.split("").length);
     
     _post.save(null, {
         success: function(post) {
@@ -555,18 +555,15 @@ Parse.Cloud.define("FacebookLoginCheck", function(request, response){
 });
 
 //push a specified number of feeds
-//request contains
+//request contains limit
 Parse.Cloud.define("aggregateBlogs", function(request, response){
     var Post = Parse.Object.extend("Post");
-    var post = new Post();
     
-    var query = new Parse.Query(post);
-    query.exists("Title");
-    query.limit(request.param.limit);
+    var query = new Parse.Query(Post);
+    query.exists("title");
+    query.limit(request.params.limit);
     query.find({
         success:function(results){
-            response.success("Successfully retrieved " + results.length + " posts");
-            //doSomething with with results
             response.success(results);
         },
         error: function(error){
