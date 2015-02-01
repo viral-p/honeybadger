@@ -463,6 +463,7 @@ Parse.Cloud.define("unlikePost", function(request, response){
     liked.save();
 });
 
+//twilio text sending
 Parse.Cloud.define("sendTextNotification", function(request, response){
     // Require and initialize the Twilio module with your credentials
 var client = require('twilio')('ACCOUNT_SID', 'AUTH_TOKEN');
@@ -483,6 +484,7 @@ client.sendSms({
 );
 });
 
+//initialize facebook SDK
 Parse.Cloud.define("initFacebook", function(request, response){
      // Initialize Parse
   Parse.initialize("YOUR_APP_ID", "YOUR_JAVASCRIPT_KEY");
@@ -508,6 +510,7 @@ Parse.Cloud.define("initFacebook", function(request, response){
   }(document, 'script', 'facebook-jssdk'));
 });
 
+//facebook login
 Prase.Cloud.define("FacebookLogin", function(request, response){
     Parse.FacebookUtils.logIn(null, {
         success: function(user) {
@@ -523,6 +526,7 @@ Prase.Cloud.define("FacebookLogin", function(request, response){
     });
 });
     
+//check if facebook is logged in
 Parse.Cloud.define("FacebookLoginCheck", function(request, response){
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
@@ -532,4 +536,13 @@ Parse.Cloud.define("FacebookLoginCheck", function(request, response){
           FB.login();
         }
     });
+});
+
+//push a specified number of feeds
+Parse.Cloud.define("aggregateBlogs", function(request, response){
+    
+});
+
+Parse.Cloud.define("getRandomPost", function(request,response){
+    
 });
