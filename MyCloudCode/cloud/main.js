@@ -24,18 +24,20 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
 
 //create new post
 Parse.Cloud.define("createNewPost", function(request, response){
-    var post = new Parse.Post();
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     var user = Parse.User.current();
     var prompt = request.param.prompt;
+    var tagsArray = request.param.tags.split(',');
+    
     post.set("Title", request.param.title);
     post.set("subtitle", request.param.subtitle);
     post.set("coverImg", request.param.coverImg);
     post.set("creator", user);
-    post.set("tags", request.param.tags);
+    post.set("tags", tagsArray);
     post.set("prompt", request.param.prompt);
-    post.set("wordCount", request.param.wordCount);
-    post.set("charCount", request.param.charCount);
     post.set("textContent", request.param.textContent);
+    post.set("wordCount", request.param.textContent.length);
     
     post.save(null, {
         success: function(post) {
@@ -55,9 +57,9 @@ Parse.Cloud.define("createNewPost", function(request, response){
 
 //create new Prompt
 Parse.Cloud.define("createNewPrompt", function(request, response){
-    var prompt = new Parse.Prompt();
-    
-    prompt.set("promptContent", request.param.content);
+    var Prompt = Parse.Object.extend("Prompt");
+    var prompt = new Prompt();
+    prompt.set("content", request.param.content);
     prompt.set("type", request.param.type);
     prompt.save(null, {
         success: function(prompt) {
@@ -91,7 +93,8 @@ Parse.Cloud.define("getUserWithID", function(request,response){
 
 //retrieve specifi post by objectId
 Parse.Cloud.define("getPostWithID", function(request,response){
-    var post = new Parse.Post();
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     var query = new Parse.Query(post);
     query.get(request.param.objectId, {
         success: function(results) {
@@ -108,7 +111,8 @@ Parse.Cloud.define("getPostWithID", function(request,response){
 
 //retrieve specific post by objectId
 Parse.Cloud.define("getPromptWithID", function(request,response){
-    var prompt = new Parse.Prompt();
+    var Prompt = Parse.Object.extend("Prompt");
+    var prompt = new Prompt();
     var query = new Parse.Query(prompt);
     query.get(request.param.objectId, {
         success: function(results) {
@@ -125,7 +129,8 @@ Parse.Cloud.define("getPromptWithID", function(request,response){
 
 //retrieve array of post that contain the tag specified
 Parse.Cloud.define("retrievePostsWithTag", function(request,response){
-    var post = new Parse.Post();
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     var query = new Parse.Query(post);
     query.equalTo("tags", request.param.tag);
     query.find({
@@ -143,7 +148,8 @@ Parse.Cloud.define("retrievePostsWithTag", function(request,response){
 
 //retrieve aray of prompts with specified tag
 Parse.Cloud.define("retrievePromptsWithTag", function(request,response){
-    var prompt = new Parse.Prompt();
+    var Prompt = Parse.Object.extend("Prompt");
+    var prompt = new Prompt();
     var query = new Parse.Query(prompt);
     query.equalTo("tags", request.param.tag);
     query.find( {
@@ -210,7 +216,8 @@ Parse.Cloud.define("getFollowing", function(request, response){
 
 //get array of posts written by author name
 Parse.Cloud.define("getPostsbyUser", function(request, response){
-    var post = new Parse.Post();
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     var query = new Parse.Query(post);
     
     query.equalTo("displayedAuthorName", request.param.author);
@@ -227,7 +234,8 @@ Parse.Cloud.define("getPostsbyUser", function(request, response){
 
 //edit Posts
 Parse.Cloud.define("editPost", function(request, response){
-    var post = new Parse.Post();
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     var query = new Parse.Query(post);
     var _post = query.get(request.param.objectId, {
         success: function(results) {
@@ -346,7 +354,8 @@ Parse.Cloud.define("deleteUser", function(request, response){
 
 //delete a post
 Parse.Cloud.define("deletePost", function(request, response){
-    var post = new Parse.Post();
+    var Post = Parse.Object.extend("Post");
+    var post = new Post();
     var query = new Parse.Query(post);
     var _post = query.get(request.param.objectId, {
         success: function(results) {
@@ -373,7 +382,8 @@ Parse.Cloud.define("deletePost", function(request, response){
 
 //delete a prompt
 Parse.Cloud.define("deletePrompt", function(request, response){
-    var prompt = new Parse.Prompt();
+    var Prompt = Parse.Object.extend("Prompt");
+    var prompt = new Prompt();
     var query = new Parse.Query(prompt);
     var _prompt = query.get(request.param.objectId, {
         success: function(results) {
@@ -511,7 +521,7 @@ Parse.Cloud.define("initFacebook", function(request, response){
 });
 
 //facebook login
-Prase.Cloud.define("FacebookLogin", function(request, response){
+Parse.Cloud.define("FacebookLogin", function(request, response){
     Parse.FacebookUtils.logIn(null, {
         success: function(user) {
             if (!user.existed()) {
