@@ -12,15 +12,8 @@ Parse.Cloud.define("newUserSignUp", function(request, response){
     user.set("password", request.params.password);
     user.set("email", request.params.email);
     user.set("name", request.params.name);
-    user.set("profilePic", img)
-    user.signUp(null, {
-        success: function(user) {
-            // Hooray! Let them use the app now.
-        },
-        error: function(user, error) {
-            // Show the error message somewhere and let the user try again.
-            alert("Error: " + error.code + " " + error.message);
-        }
+   // user.set("profilePic", img)
+    user.signUp(
     });
 });
 
@@ -414,22 +407,6 @@ Parse.Cloud.define("deletePrompt", function(request, response){
     });
 });
 
-//user login
-Parse.Cloud.define("loginUser", function(request, response){
-    Parse.User.logIn(request.params.username, request.params.password, {
-        success: function(user) {
-            // Do stuff after successful login.
-        },
-        error: function(user, error) {
-            // The login failed. Check error to see why.
-        }
-    });
-});
-
-//user logout
-Parse.Cloud.define("logoutUser", function(request, response){
-    Parse.User.logOut();
-});
 
 //follow a user
 Parse.Cloud.define("followUser", function(request, response){
