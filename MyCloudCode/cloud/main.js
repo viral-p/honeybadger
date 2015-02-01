@@ -541,7 +541,7 @@ Parse.Cloud.define("FacebookLogin", function(request, response){
         }
     });
 });
-    
+
 //check if facebook is logged in
 Parse.Cloud.define("FacebookLoginCheck", function(request, response){
     FB.getLoginStatus(function(response) {
@@ -573,5 +573,62 @@ Parse.Cloud.define("aggregateBlogs", function(request, response){
 });
 
 Parse.Cloud.define("getRandomPost", function(request,response){
+    var Post = Parse.Object.extend("Post");
     
+    var query = new Parse.Query(Post);
+    query.exists("title");
+    query.limit(request.params.limit);
+    query.find({
+        success:function(results){
+            var n = Math.round((Math.random()*(results.length-1)));
+            response.success(results[n]);
+        },
+        error: function(error){
+            response.error(error.code + ": " + error.message);
+        }
+    });
+});
+
+Parse.Cloud.define("getRandomPrompt", function(request, response){
+    var Prompt = Parse.Object.extend("Prompt");
+    
+    var query = new Parse.Query(Prompt);
+    query.exists("content");
+    query.find({
+        success:function(results){
+            var n = Math.round((Math.random()*(results.length-1)));
+            response.success(results[n]);
+        },
+        error: function(error){
+            response.error(error.code + ": " + error.message);
+        }
+    });
+});
+
+Parse.Cloud.define("getQuotes", function(request, response){
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.open("GET", "http://api.chrisvalleskey.com/fillerama/get.php?count=100&format=json&show=futurama", true);
+    xmlhttp.send();
+    
+    var jsonText = JSON.parse(xmlhttp.responseText);
+    var Prompt = Parse.Object.extend("Prompt");   
+    var i;
+    for( i = 0; i < jsonText.db.length; i++) {
+        var prompt = new Prompt();
+        var content = jsonText.db[i].quote;
+        prompt.set("content", content);
+        prompt.set("type", request.params.type);
+        prompt.save(null, {
+            success: function(prompt) {
+                // Execute any logic that should take place after the object is saved.
+                alert('New object created with objectId: ' + prompt.id);
+            },
+            error: function(prompt, error) {
+                // Execute any logic that should take place if the save fails.
+                // error is a Parse.Error with an error code and message.
+                alert('Failed to create new object, with error code: ' + error.message);
+            }
+        });
+    }
 });
